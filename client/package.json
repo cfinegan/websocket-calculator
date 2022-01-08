@@ -1,0 +1,14 @@
+{
+  "name": "websocket-calculator-client",
+  "version": "1.0.0",
+  "description": "Client for websocket-calculator",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Conor Finegan",
+  "license": "ISC",
+  "dependencies": {
+    "websocket": "^1.0.34"
+  }
+}
