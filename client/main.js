@@ -1,4 +1,4 @@
-const net = require("net");
+import WebSocket from "ws";
 
 (function() {
   console.log("hello world!");
