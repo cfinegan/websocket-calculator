@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "functional": "cpp"
+        "functional": "cpp",
+        "*.ipp": "cpp",
+        "*.tcc": "cpp",
+        "future": "cpp",
+        "istream": "cpp",
+        "ostream": "cpp",
+        "typeinfo": "cpp"
     }
 }
