@@ -58,7 +58,8 @@ function usage() {
   };
 
   connection.onmessage = function(event) {
-    console.log(event.data);
+    const message = JSON.parse(event.data);
+    console.log(message.type + ": " + message.payload);
     connection.close();
   };
 }());

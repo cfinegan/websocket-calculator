@@ -21,8 +21,25 @@ constexpr auto ALEVEL_ALL = websocketpp::log::alevel::all;
 constexpr auto ALEVEL_FRAME_PAYLOAD = websocketpp::log::alevel::frame_payload;
 
 void onMessage(Server* endpoint, ConnHandle handle, MessagePtr message) {
-    //auto messageJson = json::parse(message->get_payload());
-    endpoint->send(handle, message->get_payload(), message->get_opcode());
+    json messageJSON = json::parse(message->get_payload());
+    std::string type = messageJSON["type"].get<std::string>();
+    const json& payload = messageJSON["payload"];
+    double a = payload["a"].get<double>();
+    double b = payload["b"].get<double>();
+
+    json resultJSON;
+    if (type == "add") {
+        resultJSON["type"] = "sum";
+        resultJSON["payload"] = a + b;
+    } else if (type == "subtract") {
+        resultJSON["type"] = "difference";
+        resultJSON["payload"] = a - b;
+    } else {
+        // TODO: better error, maybe actually send a response?
+        throw std::runtime_error("invalid type specified");
+    }
+
+    endpoint->send(handle, resultJSON.dump(), message->get_opcode());
 }
 
 int main(int argc, char* argv[]) {
