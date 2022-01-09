@@ -2,8 +2,6 @@
 #include <websocketpp/server.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <iostream>
-#include <stdexcept>
 #include <cstdlib>
 
 using Server = websocketpp::server<websocketpp::config::asio>;
@@ -20,26 +18,40 @@ constexpr auto ELEVEL_ALL = websocketpp::log::elevel::all;
 constexpr auto ALEVEL_ALL = websocketpp::log::alevel::all;
 constexpr auto ALEVEL_FRAME_PAYLOAD = websocketpp::log::alevel::frame_payload;
 
-void onMessage(Server* endpoint, ConnHandle handle, MessagePtr message) {
-    json messageJSON = json::parse(message->get_payload());
-    std::string type = messageJSON["type"].get<std::string>();
-    const json& payload = messageJSON["payload"];
-    double a = payload["a"].get<double>();
-    double b = payload["b"].get<double>();
+constexpr auto INVALID_PAYLOAD = websocketpp::close::status::invalid_payload;
 
-    json resultJSON;
-    if (type == "add") {
-        resultJSON["type"] = "sum";
-        resultJSON["payload"] = a + b;
-    } else if (type == "subtract") {
-        resultJSON["type"] = "difference";
-        resultJSON["payload"] = a - b;
-    } else {
-        // TODO: better error, maybe actually send a response?
-        throw std::runtime_error("invalid type specified");
+void onMessage(Server* endpoint, ConnHandle handle, MessagePtr message) {
+
+    std::string result;
+    
+    try {
+        json messageJSON = json::parse(message->get_payload());
+        std::string type = messageJSON["type"].get<std::string>();
+        const json& payload = messageJSON["payload"];
+        double a = payload["a"].get<double>();
+        double b = payload["b"].get<double>();
+
+        json resultJSON;
+        if (type == "add") {
+            resultJSON["type"] = "sum";
+            resultJSON["payload"] = a + b;
+        } else if (type == "subtract") {
+            resultJSON["type"] = "difference";
+            resultJSON["payload"] = a - b;
+        } else {
+            std::string reason = "Invalid operation type: ";
+            reason += type;
+            endpoint->close(handle, INVALID_PAYLOAD, reason);
+            return;
+        }
+        result = resultJSON.dump();
+    } catch (const json::exception& e) {
+        // exception from the JSON layer means the payload is malformed
+        endpoint->close(handle, INVALID_PAYLOAD, e.what());
+        return;
     }
 
-    endpoint->send(handle, resultJSON.dump(), message->get_opcode());
+    endpoint->send(handle, result, message->get_opcode());
 }
 
 int main(int argc, char* argv[]) {
