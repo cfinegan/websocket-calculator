@@ -54,7 +54,8 @@ function usage() {
   };
 
   connection.onerror = function(error) {
-    console.error("websocket error: " + error);
+    console.error("websocket error");
+    console.error(error);
   };
 
   connection.onmessage = function(event) {
