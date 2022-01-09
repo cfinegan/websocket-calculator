@@ -47,8 +47,18 @@ function usage() {
     }
   });
 
-  console.log(message);
+  const connection = new WebSocket("ws://localhost:8080");
 
-  // const connection = new WebSocket("wss://localhost:8080");
-  
+  connection.onopen = function() {
+    connection.send(message);
+  };
+
+  connection.onerror = function(error) {
+    console.error("websocket error: " + error);
+  };
+
+  connection.onmessage = function(event) {
+    console.log(event.data);
+    connection.close();
+  };
 }());

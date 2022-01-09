@@ -2,6 +2,7 @@
 #include <websocketpp/server.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <iostream>
 #include <stdexcept>
 #include <cstdlib>
 
@@ -34,6 +35,10 @@ int main(int argc, char* argv[]) {
     endpoint.init_asio();
 
     endpoint.set_message_handler(bind(&onMessage, &endpoint, ::_1, ::_2));
+
+    // TODO: Set up a signal handler to close down server 
+    // cleanly, then remove this.
+    endpoint.set_reuse_addr(true);
 
     endpoint.listen(8080);
     endpoint.start_accept();
