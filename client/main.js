@@ -63,4 +63,10 @@ function usage() {
     console.log(message.type + ": " + message.payload);
     connection.close();
   };
+
+  connection.onclose = function(event) {
+    if (event.code !== 1000) {
+      console.error("Conection closed - " + event.reason);
+    }
+  };
 }());
