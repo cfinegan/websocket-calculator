@@ -18,8 +18,8 @@ sudo apt-get install libasio-dev
 To build the server, run the following commands from the project root directory:
 
 ```
-cd server/
-make
+cmake server/
+make -C server/
 ```
 
 ## Client
