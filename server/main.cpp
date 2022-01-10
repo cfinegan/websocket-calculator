@@ -2,6 +2,7 @@
 #include <websocketpp/server.hpp>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <iostream>
 #include <cstdlib>
 
 using Server = websocketpp::server<websocketpp::config::asio>;
@@ -51,7 +52,12 @@ void onMessage(Server* endpoint, ConnHandle handle, MessagePtr message) {
         return;
     }
 
-    endpoint->send(handle, result, message->get_opcode());
+    try {
+        endpoint->send(handle, result, message->get_opcode());
+    } catch (const websocketpp::exception& e) {
+        std::cerr << "onMessage: failed to send result: " <<
+                e.what() << std::endl;
+    }
 }
 
 int main(int argc, char* argv[]) {
