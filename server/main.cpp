@@ -75,6 +75,8 @@ int main(int argc, char* argv[]) {
     // cleanly, then remove this.
     endpoint.set_reuse_addr(true);
 
+    std::cout << "Starting server..." << std::endl;
+
     endpoint.listen(8080);
     endpoint.start_accept();
     endpoint.run();
